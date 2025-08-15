@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Quote & Image Generator</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom neon colors */
+    :root {
+      --neon-cyan: #00ffff;
+      --neon-magenta: #ff00ff;
+    }
+    /* Fade-in animation */
+    .fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      0% {opacity: 0; transform: translateY(10px);} 
+      100% {opacity: 1; transform: translateY(0);} 
+    }
+    /* Glassmorphism card */
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100 scroll-smooth">
+  <!-- Navigation -->
+  <nav class="sticky top-0 z-50 bg-gray-900/70 backdrop-blur-lg shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="#home" class="text-xl font-bold text-cyan-400">AI Generator</a>
+      <ul class="flex space-x-6 text-sm font-medium">
+        <li><a href="#home" class="hover:text-cyan-400 transition">Home</a></li>
+        <li><a href="#generator" class="hover:text-cyan-400 transition">Generator</a></li>
+        <li><a href="#gallery" class="hover:text-cyan-400 transition">Gallery</a></li>
+        <li><a href="#contact" class="hover:text-cyan-400 transition">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6">
+    <h1 class="text-4xl sm:text-6xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-fuchsia-500 to-pink-500">
+      AI Quote & Image Generator
+    </h1>
+    <p class="max-w-xl text-lg text-gray-300">
+      Ignite your inspiration with AI-powered quotes and stunning images tailored to your favorite topics.
+    </p>
+    <a href="#generator" class="mt-10 inline-block px-6 py-3 rounded-full border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition">
+      Try it Now
+    </a>
+  </section>
+
+  <!-- Generator Section -->
+  <section id="generator" class="py-20 bg-gray-800/40">
+    <div class="max-w-4xl mx-auto px-6">
+      <h2 class="text-3xl font-bold mb-8 text-center text-fuchsia-400">Generate Inspiration</h2>
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <input id="topicInput" type="text" placeholder="Enter a topic (e.g., success)" class="flex-1 px-4 py-3 rounded-lg bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400" />
+        <button id="generateBtn" class="px-6 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-semibold transition">Generate</button>
+      </div>
+
+      <!-- Output Card -->
+      <div id="output" class="mt-10 flex justify-center"></div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery" class="py-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-3xl font-bold mb-8 text-center text-fuchsia-400">Recent Creations</h2>
+      <div id="galleryGrid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-20 bg-gray-800/40">
+    <div class="max-w-xl mx-auto px-6">
+      <h2 class="text-3xl font-bold mb-8 text-center text-fuchsia-400">Contact Us</h2>
+      <form id="contactForm" class="space-y-4">
+        <input type="text" placeholder="Name" required class="w-full px-4 py-3 rounded-lg bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400" />
+        <input type="email" placeholder="Email" required class="w-full px-4 py-3 rounded-lg bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400" />
+        <textarea rows="4" placeholder="Message" required class="w-full px-4 py-3 rounded-lg bg-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"></textarea>
+        <button type="submit" class="w-full px-6 py-3 rounded-lg bg-magenta-500 hover:bg-pink-500 text-gray-900 font-semibold transition" style="background-color: var(--neon-magenta);">
+          Send
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="py-6 text-center text-gray-500 text-sm bg-gray-900/70">
+    © <span id="year"></span> AI Quote & Image Generator. Built with ❤️.
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Quotes database (topic: [quotes])
+    const quotesDB = {
+      success: [
+        "Success is not final; failure is not fatal: It is the courage to continue that counts.",
+        "The road to success is dotted with many tempting parking spaces.",
+        "Success usually comes to those who are too busy to be looking for it."
+      ],
+      innovation: [
+        "Innovation distinguishes between a leader and a follower.",
+        "The heart and soul of the company is creativity and innovation.",
+        "Innovation is seeing what everybody has seen and thinking what nobody has thought."
+      ],
+      motivation: [
+        "The only limit to our realization of tomorrow is our doubts of today.",
+        "The future belongs to those who believe in the beauty of their dreams.",
+        "Don't watch the clock; do what it does. Keep going."
+      ],
+      default: [
+        "Believe you can and you're halfway there.",
+        "Your limitation—it's only your imagination.",
+        "Push yourself, because no one else is going to do it for you."
+      ]
+    };
+
+    const topicInput = document.getElementById('topicInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const output = document.getElementById('output');
+    const galleryGrid = document.getElementById('galleryGrid');
+    const yearSpan = document.getElementById('year');
+
+    yearSpan.textContent = new Date().getFullYear();
+
+    const recentCreations = []; // stores objects {quote, imgUrl}
+
+    function getRandomQuote(topic) {
+      const key = quotesDB[topic] ? topic : 'default';
+      const arr = quotesDB[key];
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function createCard(quote, imgUrl) {
+      const card = document.createElement('div');
+      card.className = 'glass rounded-xl overflow-hidden shadow-lg max-w-md fade-in';
+      card.innerHTML = `
+        <img src="${imgUrl}" alt="${quote}" class="w-full h-48 object-cover" />
+        <div class="p-6">
+          <p class="text-lg italic mb-2">"${quote}"</p>
+          <span class="text-sm text-gray-400">#${topicInput.value.trim() || 'inspiration'}</span>
+        </div>
+      `;
+      return card;
+    }
+
+    function updateGallery() {
+      galleryGrid.innerHTML = '';
+      recentCreations.slice(0, 6).forEach(item => {
+        const gCard = document.createElement('div');
+        gCard.className = 'glass rounded-xl overflow-hidden shadow-md';
+        gCard.innerHTML = `
+          <img src="${item.imgUrl}" alt="${item.quote}" class="w-full h-40 object-cover" />
+          <div class="p-4">
+            <p class="text-sm italic">"${item.quote}"</p>
+          </div>
+        `;
+        galleryGrid.appendChild(gCard);
+      });
+    }
+
+    generateBtn.addEventListener('click', () => {
+      const topic = topicInput.value.trim().toLowerCase() || 'inspiration';
+      const quote = getRandomQuote(topic);
+      const imgUrl = `https://source.unsplash.com/600x400/?${encodeURIComponent(topic)}&sig=${Date.now()}`;
+
+      // Create and display card
+      output.innerHTML = '';
+      const card = createCard(quote, imgUrl);
+      output.appendChild(card);
+
+      // Store and update gallery
+      recentCreations.unshift({quote, imgUrl});
+      if (recentCreations.length > 6) recentCreations.pop();
+      updateGallery();
+    });
+
+    // Contact form handler
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thank you for reaching out! We will get back to you soon.');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
