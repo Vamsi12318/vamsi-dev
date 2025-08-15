@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Quote & Image Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'neon-cyan': '#00ffff',
+                        'neon-magenta': '#ff00ff',
+                        'dark-bg': '#0a0a0a',
+                        'card-bg': 'rgba(255, 255, 255, 0.05)'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-in-out',
+                        'glow': 'glow 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(0, 255, 255, 0.5)' },
+                            '100%': { boxShadow: '0 0 30px rgba(255, 0, 255, 0.5)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-white min-h-screen">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glassmorphism border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="text-2xl font-bold text-gradient">AI Generator</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-white hover:text-neon-cyan transition-colors duration-300">Home</a>
+                    <a href="#generator" class="text-white hover:text-neon-cyan transition-colors duration-300">Generator</a>
+                    <a href="#gallery" class="text-white hover:text-neon-cyan transition-colors duration-300">Gallery</a>
+                    <a href="#contact" class="text-white hover:text-neon-cyan transition-colors duration-300">Contact</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-white hover:text-neon-cyan">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="md:hidden hidden pb-4">
+                <div class="flex flex-col space-y-4">
+                    <a href="#home" class="text-white hover:text-neon-cyan transition-colors duration-300">Home</a>
+                    <a href="#generator" class="text-white hover:text-neon-cyan transition-colors duration-300">Generator</a>
+                    <a href="#gallery" class="text-white hover:text-neon-cyan transition-colors duration-300">Gallery</a>
+                    <a href="#contact" class="text-white hover:text-neon-cyan transition-colors duration-300">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="py-20 px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 text-gradient animate-glow">
+                AI Quote & Image Generator
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                Harness the power of artificial intelligence to inspire and motivate. 
+                Generate personalized inspirational quotes and stunning visuals that resonate with your vision.
+            </p>
+            <a href="#generator" class="inline-block bg-gradient-to-r from-neon-cyan to-neon-magenta text-dark-bg px-8 py-4 rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300 animate-glow">
+                Start Generating
+            </a>
+        </div>
+    </section>
+
+    <!-- Generator Section -->
+    <section id="generator" class="py-20 px-4">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gradient">Generate Your Inspiration</h2>
+            
+            <div class="glassmorphism rounded-2xl p-8 mb-8">
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <input type="text" id="topic-input" placeholder="Enter a topic (e.g., success, innovation, creativity)" 
+                           class="flex-1 px-6 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 transition-all duration-300">
+                    <button id="generate-btn" class="px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-magenta text-dark-bg font-semibold rounded-xl hover:scale-105 transition-transform duration-300">
+                        Generate
+                    </button>
+                </div>
+                
+                <div id="result-card" class="hidden animate-fade-in">
+                    <div class="glassmorphism rounded-2xl p-6 border border-white/10">
+                        <div class="grid md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <h3 class="text-2xl font-semibold mb-4 text-neon-cyan">Your Quote</h3>
+                                <blockquote id="generated-quote" class="text-xl text-gray-200 italic leading-relaxed"></blockquote>
+                                <p class="text-sm text-gray-400 mt-2">Topic: <span id="quote-topic" class="text-neon-magenta"></span></p>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-semibold mb-4 text-neon-magenta">Generated Image</h3>
+                                <img id="generated-image" class="w-full h-64 object-cover rounded-xl shadow-2xl" alt="Generated image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gradient">Recent Generations</h2>
+            <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Gallery items will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-4">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gradient">Get In Touch</h2>
+            <form id="contact-form" class="glassmorphism rounded-2xl p-8">
+                <div class="mb-6">
+                    <label for="name" class="block text-neon-cyan font-semibold mb-2">Name</label>
+                    <input type="text" id="name" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 transition-all duration-300">
+                </div>
+                <div class="mb-6">
+                    <label for="email" class="block text-neon-magenta font-semibold mb-2">Email</label>
+                    <input type="email" id="email" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 transition-all duration-300">
+                </div>
+                <div class="mb-6">
+                    <label for="message" class="block text-neon-cyan font-semibold mb-2">Message</label>
+                    <textarea id="message" rows="4" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan focus:ring-2 focus:ring-neon-cyan/20 transition-all duration-300 resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-neon-cyan to-neon-magenta text-dark-bg py-4 rounded-xl font-semibold text-lg hover:scale-105 transition-transform duration-300">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 text-center border-t border-white/10">
+        <p class="text-gray-400">&copy; 2024 AI Quote & Image Generator. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Pre-written inspirational quotes organized by topics
+        const quotes = {
+            'success': [
+                "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                "The only way to do great work is to love what you do.",
+                "Success usually comes to those who are too busy to be looking for it.",
+                "Don't watch the clock; do what it does. Keep going.",
+                "The future belongs to those who believe in the beauty of their dreams."
+            ],
+            'innovation': [
+                "Innovation distinguishes between a leader and a follower.",
+                "The best way to predict the future is to invent it.",
+                "Creativity is thinking up new things. Innovation is doing new things.",
+                "Innovation is the ability to see change as an opportunity, not a threat.",
+                "The only way to discover the limits of the possible is to go beyond them into the impossible."
+            ],
+            'creativity': [
+                "Creativity is intelligence having fun.",
+                "The creative adult is the child who survived.",
+                "Creativity takes courage.",
+                "Imagination is the beginning of creation.",
+                "Art is not what you see, but what you make others see."
+            ],
+            'motivation': [
+                "The only limit to our realization of tomorrow is our doubts of today.",
+                "Believe you can and you're halfway there.",
+                "It always seems impossible until it's done.",
+                "The way to get started is to quit talking and begin doing.",
+                "Don't let yesterday take up too much of today."
+            ],
+            'leadership': [
+                "Leadership is not about being in charge. It is about taking care of those in your charge.",
+                "The greatest leader is not necessarily the one who does the greatest things. He is the one that gets the people to do the greatest things.",
+                "A leader is one who knows the way, goes the way, and shows the way.",
+                "Leadership is the capacity to translate vision into reality.",
+                "The function of leadership is to produce more leaders, not more followers."
+            ],
+            'happiness': [
+                "Happiness is not something ready-made. It comes from your own actions.",
+                "The purpose of our lives is to be happy.",
+                "Happiness is when what you think, what you say, and what you do are in harmony.",
+                "Joy is the simplest form of gratitude.",
+                "Happiness is the only thing that multiplies when you share it."
+            ]
+        };
+
+        // Gallery storage
+        let galleryItems = [];
+
+        // DOM elements
+        const topicInput = document.getElementById('topic-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const resultCard = document.getElementById('result-card');
+        const generatedQuote = document.getElementById('generated-quote');
+        const quoteTopic = document.getElementById('quote-topic');
+        const generatedImage = document.getElementById('generated-image');
+        const galleryGrid = document.getElementById('gallery-grid');
+        const contactForm = document.getElementById('contact-form');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                // Close mobile menu if open
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Generate quote and image
+        generateBtn.addEventListener('click', async () => {
+            const topic = topicInput.value.trim().toLowerCase();
+            
+            if (!topic) {
+                alert('Please enter a topic!');
+                return;
+            }
+
+            // Show loading state
+            generateBtn.textContent = 'Generating...';
+            generateBtn.disabled = true;
+
+            try {
+                // Generate quote
+                const quote = generateQuote(topic);
+                
+                // Generate image
+                const imageUrl = await generateImage(topic);
+                
+                // Display results
+                displayResults(quote, topic, imageUrl);
+                
+                // Add to gallery
+                addToGallery(quote, topic, imageUrl);
+                
+            } catch (error) {
+                console.error('Error generating content:', error);
+                alert('Error generating content. Please try again.');
+            } finally {
+                // Reset button
+                generateBtn.textContent = 'Generate';
+                generateBtn.disabled = false;
+            }
+        });
+
+        // Generate quote based on topic
+        function generateQuote(topic) {
+            // Find the best matching topic
+            let bestMatch = topic;
+            for (const key in quotes) {
+                if (topic.includes(key) || key.includes(topic)) {
+                    bestMatch = key;
+                    break;
+                }
+            }
+            
+            // If no exact match, use a random topic
+            if (!quotes[bestMatch]) {
+                const topics = Object.keys(quotes);
+                bestMatch = topics[Math.floor(Math.random() * topics.length)];
+            }
+            
+            const topicQuotes = quotes[bestMatch];
+            return topicQuotes[Math.floor(Math.random() * topicQuotes.length)];
+        }
+
+        // Generate image using Unsplash API
+        async function generateImage(topic) {
+            // For demo purposes, we'll use a placeholder service since Unsplash requires API key
+            // In production, you would use: `https://api.unsplash.com/photos/random?query=${topic}&client_id=YOUR_API_KEY`
+            const width = 800;
+            const height = 600;
+            return `https://picsum.photos/${width}/${height}?random=${Date.now()}&topic=${topic}`;
+        }
+
+        // Display generated results
+        function displayResults(quote, topic, imageUrl) {
+            generatedQuote.textContent = quote;
+            quoteTopic.textContent = topic;
+            generatedImage.src = imageUrl;
+            resultCard.classList.remove('hidden');
+            
+            // Scroll to result
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Add item to gallery
+        function addToGallery(quote, topic, imageUrl) {
+            const galleryItem = {
+                quote: quote,
+                topic: topic,
+                imageUrl: imageUrl,
+                timestamp: new Date()
+            };
+            
+            galleryItems.unshift(galleryItem);
+            
+            // Keep only last 6 items
+            if (galleryItems.length > 6) {
+                galleryItems = galleryItems.slice(0, 6);
+            }
+            
+            updateGallery();
+        }
+
+        // Update gallery display
+        function updateGallery() {
+            galleryGrid.innerHTML = '';
+            
+            galleryItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'glassmorphism rounded-2xl p-6 border border-white/10 hover:scale-105 transition-transform duration-300';
+                itemElement.innerHTML = `
+                    <img src="${item.imageUrl}" alt="${item.topic}" class="w-full h-48 object-cover rounded-xl mb-4">
+                    <blockquote class="text-lg text-gray-200 italic mb-3">"${item.quote}"</blockquote>
+                    <p class="text-sm text-gray-400">Topic: <span class="text-neon-magenta">${item.topic}</span></p>
+                    <p class="text-xs text-gray-500 mt-2">${item.timestamp.toLocaleDateString()}</p>
+                `;
+                galleryGrid.appendChild(itemElement);
+            });
+        }
+
+        // Handle contact form submission
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            // Simple validation
+            if (!name || !email || !message) {
+                alert('Please fill in all fields!');
+                return;
+            }
+            
+            // Show thank you message
+            alert(`Thank you for your message, ${name}! We'll get back to you soon.`);
+            
+            // Reset form
+            contactForm.reset();
+        });
+
+        // Initialize gallery with some sample items
+        function initializeGallery() {
+            const sampleTopics = ['success', 'innovation', 'creativity'];
+            sampleTopics.forEach(topic => {
+                const quote = generateQuote(topic);
+                const imageUrl = `https://picsum.photos/800/600?random=${Math.random()}&topic=${topic}`;
+                addToGallery(quote, topic, imageUrl);
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGallery();
+        });
+
+        // Add some interactivity to the hero section
+        document.addEventListener('DOMContentLoaded', function() {
+            const heroTitle = document.querySelector('#home h1');
+            heroTitle.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            heroTitle.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
