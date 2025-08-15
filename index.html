@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Quote & Image Generator</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Meta -->
+    <meta name="description" content="AI-powered inspiration: generate quotes and images on any topic using a beautiful dark, neon-themed UI." />
+
+    <style>
+      :root {
+        --cyan: #22d3ee;
+        --magenta: #e879f9;
+      }
+
+      /* Subtle animated gradient background */
+      body {
+        background: radial-gradient(1200px 800px at 10% 10%, rgba(34, 211, 238, 0.08), transparent 60%),
+                    radial-gradient(1000px 700px at 90% 20%, rgba(232, 121, 249, 0.08), transparent 60%),
+                    linear-gradient(180deg, #030712 0%, #020617 100%);
+      }
+
+      /* Glassmorphism utility */
+      .glass {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      /* Fade-in animation */
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .fade-in {
+        animation: fadeInUp 500ms ease-out both;
+      }
+
+      /* Neon text glow */
+      .neon-cyan {
+        text-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
+      }
+      .neon-magenta {
+        text-shadow: 0 0 12px rgba(232, 121, 249, 0.45);
+      }
+
+      /* Hide default input arrows on number (mobile safety) */
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-gray-100 selection:bg-cyan-500/20 selection:text-cyan-200">
+    <!-- Sticky Nav -->
+    <header class="sticky top-0 z-50 border-b border-cyan-500/10 bg-black/40 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+        <a href="#home" class="text-lg font-semibold tracking-wide">
+          <span class="text-cyan-300 neon-cyan">AI</span>
+          <span class="text-fuchsia-300 neon-magenta">Generator</span>
+        </a>
+        <ul class="hidden gap-6 text-sm md:flex">
+          <li><a href="#home" class="text-gray-300 hover:text-cyan-300 transition-colors">Home</a></li>
+          <li><a href="#generator" class="text-gray-300 hover:text-cyan-300 transition-colors">Generator</a></li>
+          <li><a href="#gallery" class="text-gray-300 hover:text-cyan-300 transition-colors">Gallery</a></li>
+          <li><a href="#contact" class="text-gray-300 hover:text-cyan-300 transition-colors">Contact</a></li>
+        </ul>
+        <button aria-label="Open Menu" class="md:hidden rounded-md border border-white/10 px-3 py-1.5 text-sm text-gray-200 hover:border-cyan-400/40 hover:text-cyan-300">Menu</button>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <section id="home" class="mx-auto max-w-6xl px-4 pt-14 pb-10">
+      <div class="mx-auto max-w-3xl text-center">
+        <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+          <span class="bg-gradient-to-r from-cyan-300 via-cyan-200 to-fuchsia-300 bg-clip-text text-transparent neon-cyan">AI Quote & Image Generator</span>
+        </h1>
+        <p class="mt-4 text-base text-gray-300 sm:text-lg">
+          Use simple prompts to spark <span class="text-cyan-300">inspiration</span>. Generate uplifting quotes and vivid images in a single click.
+        </p>
+        <div class="mt-6 flex items-center justify-center gap-3">
+          <a href="#generator" class="rounded-lg bg-cyan-500/20 px-4 py-2 text-cyan-200 ring-1 ring-cyan-400/30 hover:bg-cyan-500/30 hover:ring-cyan-300 transition">Try the Generator</a>
+          <a href="#gallery" class="rounded-lg bg-fuchsia-500/10 px-4 py-2 text-fuchsia-200 ring-1 ring-fuchsia-400/30 hover:bg-fuchsia-500/20 hover:ring-fuchsia-300 transition">View Gallery</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Generator -->
+    <section id="generator" class="mx-auto max-w-6xl px-4 pb-12">
+      <div class="glass rounded-2xl p-5 sm:p-6 md:p-8">
+        <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          <label for="topicInput" class="sr-only">Topic</label>
+          <input id="topicInput" type="text" placeholder="Enter a topic, e.g., success, innovation" class="w-full flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-gray-100 placeholder-gray-400 outline-none ring-0 transition focus:border-cyan-400/50 focus:bg-white/10" />
+          <button id="generateBtn" class="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-fuchsia-500 px-5 py-3 font-semibold text-gray-900 hover:from-cyan-400 hover:to-fuchsia-400 transition disabled:opacity-60 disabled:cursor-not-allowed">
+            <span>Generate</span>
+            <svg class="h-5 w-5 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Result Card -->
+        <div id="result" class="mt-6 hidden">
+          <article class="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+            <div class="relative">
+              <img id="resultImage" alt="Generated" class="h-64 w-full object-cover sm:h-80 md:h-[24rem] opacity-0 transition-opacity duration-500" />
+              <div id="imageSkeleton" class="absolute inset-0 animate-pulse bg-gradient-to-b from-white/10 to-white/0"></div>
+            </div>
+            <div class="p-5 sm:p-6">
+              <blockquote class="text-lg leading-relaxed text-gray-200">
+                <p id="resultQuote" class=""></p>
+              </blockquote>
+              <p id="resultTopic" class="mt-2 text-sm text-gray-400"></p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section id="gallery" class="mx-auto max-w-6xl px-4 pb-16">
+      <div class="mb-4 flex items-end justify-between">
+        <h2 class="text-2xl font-bold text-gray-100">Recent Gallery</h2>
+        <button id="clearGalleryBtn" class="text-sm text-gray-400 hover:text-fuchsia-300 underline underline-offset-2">Clear</button>
+      </div>
+      <div id="galleryGrid" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"></div>
+      <p id="emptyGalleryText" class="mt-4 text-center text-sm text-gray-400">No items yet. Generate something above!</p>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="mx-auto max-w-4xl px-4 pb-24">
+      <div class="glass rounded-2xl p-6 sm:p-8">
+        <h3 class="text-xl font-semibold text-gray-100">Contact</h3>
+        <p class="mt-1 text-sm text-gray-400">Have feedback or ideas? Send a quick message.</p>
+        <form id="contactForm" class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="sm:col-span-1">
+            <label for="name" class="mb-1 block text-sm text-gray-300">Name</label>
+            <input id="name" type="text" required class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-gray-100 placeholder-gray-400 outline-none focus:border-fuchsia-400/50" placeholder="Your name" />
+          </div>
+          <div class="sm:col-span-1">
+            <label for="email" class="mb-1 block text-sm text-gray-300">Email</label>
+            <input id="email" type="email" required class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-gray-100 placeholder-gray-400 outline-none focus:border-fuchsia-400/50" placeholder="you@example.com" />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="message" class="mb-1 block text-sm text-gray-300">Message</label>
+            <textarea id="message" rows="4" required class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-gray-100 placeholder-gray-400 outline-none focus:border-fuchsia-400/50" placeholder="Say hello..." ></textarea>
+          </div>
+          <div class="sm:col-span-2">
+            <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-fuchsia-500 px-5 py-3 font-semibold text-gray-900 hover:from-cyan-400 hover:to-fuchsia-400 transition">
+              <span>Send</span>
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 7.5l8.955 3.582a1.5 1.5 0 001.09 0L22.75 7.5M6 18.75h12" />
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-black/30 py-8">
+      <div class="mx-auto max-w-6xl px-4 text-center text-sm text-gray-400">
+        <p>
+          Built with <span class="text-cyan-300">Tailwind CSS</span>. Images via <a href="https://unsplash.com" target="_blank" rel="noreferrer" class="text-fuchsia-300 underline underline-offset-2">Unsplash</a>.
+        </p>
+      </div>
+    </footer>
+
+    <!-- App Script -->
+    <script>
+      // Pre-written quotes by topic and generic templates
+      const quotesByTopic = {
+        success: [
+          "Success is the sum of small efforts repeated day in and day out.",
+          "Dream big, start small, act now.",
+          "Success happens when preparation meets opportunity.",
+          "Let your consistency be louder than your excuses."
+        ],
+        innovation: [
+          "Innovation is what distinguishes a leader from a follower.",
+          "Curiosity is the spark, iteration is the flame.",
+          "Break patterns. Make progress.",
+          "Think boldly, build bravely."
+        ],
+        perseverance: [
+          "Fall seven times, stand up eight.",
+          "Endurance turns the impossible into the inevitable.",
+          "The path is made by walking—keep going.",
+          "Discipline is destiny." 
+        ],
+        leadership: [
+          "Leaders light the path and walk it first.",
+          "Influence grows when ego shrinks.",
+          "Vision without action is a daydream; action without vision is a nightmare.",
+          "Serve first, lead always."
+        ],
+        creativity: [
+          "Creativity is intelligence having fun.",
+          "Make something today that your future self will thank you for.",
+          "Constraints are invitations to invent.",
+          "Art is the shortest path from idea to impact."
+        ],
+        courage: [
+          "Courage is a habit—practice daily.",
+          "Do it afraid, then do it again.",
+          "Bravery is a choice before it is a feeling.",
+          "On the other side of fear is the life you want."
+        ],
+        learning: [
+          "Stay curious. Everything is figureoutable.",
+          "A little better every day beats perfect someday.",
+          "Notes today, wisdom tomorrow.",
+          "Iterate your understanding."
+        ],
+        growth: [
+          "Growth begins where comfort ends.",
+          "Tiny improvements compound into transformation.",
+          "Be stubborn about goals and flexible about methods.",
+          "Your future is built in quiet daily choices."
+        ],
+        discipline: [
+          "Discipline is choosing what you want most over what you want now.",
+          "Structure sets you free.",
+          "Routines are rocket fuel for results.",
+          "Consistency beats intensity."
+        ]
+      };
+
+      const genericTemplates = [
+        topic => `Let ${topic} be the compass and your actions the map.`,
+        topic => `Greatness in ${topic} is built from small daily choices.`,
+        topic => `When you focus on ${topic}, momentum finds you.`,
+        topic => `Make room for ${topic}; the future is listening.`,
+        topic => `Shape the world with intentional ${topic}.`
+      ];
+
+      const topicInput = document.getElementById('topicInput');
+      const generateBtn = document.getElementById('generateBtn');
+      const result = document.getElementById('result');
+      const resultImage = document.getElementById('resultImage');
+      const resultQuote = document.getElementById('resultQuote');
+      const resultTopic = document.getElementById('resultTopic');
+      const imageSkeleton = document.getElementById('imageSkeleton');
+
+      const galleryGrid = document.getElementById('galleryGrid');
+      const emptyGalleryText = document.getElementById('emptyGalleryText');
+      const clearGalleryBtn = document.getElementById('clearGalleryBtn');
+
+      const MAX_HISTORY = 6;
+      const history = [];
+
+      function pickRandom(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function buildUnsplashUrl(query) {
+        const q = encodeURIComponent(query);
+        const signature = Date.now(); // cache buster for variety
+        return `https://source.unsplash.com/featured/800x600?${q}&sig=${signature}`;
+      }
+
+      function getQuoteForTopic(topicRaw) {
+        const topic = topicRaw.trim().toLowerCase();
+        const bank = quotesByTopic[topic];
+        if (Array.isArray(bank) && bank.length) return pickRandom(bank);
+        const template = pickRandom(genericTemplates);
+        return template(topicRaw.trim());
+      }
+
+      function createGalleryCard(item) {
+        const card = document.createElement('article');
+        card.className = 'glass overflow-hidden rounded-2xl border border-white/10 fade-in';
+
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'relative';
+
+        const img = document.createElement('img');
+        img.alt = 'Generated';
+        img.src = item.imageUrl;
+        img.className = 'h-48 w-full object-cover opacity-0 transition-opacity duration-500';
+
+        const skeleton = document.createElement('div');
+        skeleton.className = 'absolute inset-0 animate-pulse bg-gradient-to-b from-white/10 to-white/0';
+
+        img.addEventListener('load', () => {
+          img.classList.remove('opacity-0');
+          skeleton.remove();
+        });
+
+        imgWrap.appendChild(img);
+        imgWrap.appendChild(skeleton);
+
+        const body = document.createElement('div');
+        body.className = 'p-4';
+
+        const quoteP = document.createElement('p');
+        quoteP.className = 'text-sm text-gray-200';
+        quoteP.textContent = `“${item.quote}”`;
+
+        const topicP = document.createElement('p');
+        topicP.className = 'mt-1 text-xs text-gray-400';
+        topicP.textContent = `#${item.topic}`;
+
+        body.appendChild(quoteP);
+        body.appendChild(topicP);
+
+        card.appendChild(imgWrap);
+        card.appendChild(body);
+
+        return card;
+      }
+
+      function refreshGallery() {
+        galleryGrid.innerHTML = '';
+        if (history.length === 0) {
+          emptyGalleryText.classList.remove('hidden');
+          return;
+        }
+        emptyGalleryText.classList.add('hidden');
+        history.slice(0, MAX_HISTORY).forEach(item => {
+          galleryGrid.appendChild(createGalleryCard(item));
+        });
+      }
+
+      function showResult(quote, imageUrl, topic) {
+        // Update text
+        resultQuote.textContent = `“${quote}”`;
+        resultTopic.textContent = `#${topic}`;
+
+        // Reset image state
+        imageSkeleton.classList.remove('hidden');
+        resultImage.classList.add('opacity-0');
+        resultImage.src = imageUrl;
+
+        // Fade-in container
+        result.classList.remove('hidden');
+        result.classList.add('fade-in');
+        setTimeout(() => result.classList.remove('fade-in'), 600);
+      }
+
+      generateBtn.addEventListener('click', () => {
+        const topicRaw = topicInput.value.trim();
+        if (!topicRaw) {
+          topicInput.classList.add('ring-2', 'ring-fuchsia-400/60');
+          topicInput.focus();
+          setTimeout(() => topicInput.classList.remove('ring-2', 'ring-fuchsia-400/60'), 800);
+          return;
+        }
+
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<svg class="mr-2 h-5 w-5 animate-spin text-gray-900" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>Generating';
+
+        const quote = getQuoteForTopic(topicRaw);
+        const imageUrl = buildUnsplashUrl(topicRaw);
+
+        // Preload image so the fade works smoothly
+        const img = new Image();
+        img.onload = () => {
+          showResult(quote, imageUrl, topicRaw);
+
+          // Track history (newest first)
+          history.unshift({ quote, imageUrl, topic: topicRaw });
+          if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
+          refreshGallery();
+
+          // Reset CTA
+          generateBtn.disabled = false;
+          generateBtn.innerHTML = '<span>Generate</span>\n            <svg class="h-5 w-5 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">\n              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />\n            </svg>';
+        };
+        img.onerror = () => {
+          // Fallback: still show quote; use a neutral gradient background image via data URI
+          const fallback = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"800\" height=\"600\"><defs><linearGradient id=\"g\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#22d3ee\"/><stop offset=\"1\" stop-color=\"#e879f9\"/></linearGradient></defs><rect width=\"100%\" height=\"100%\" fill=\"url(#g)\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" font-size=\"28\" fill=\"#0a0a0a\" font-family=\"sans-serif\">${topicRaw}</text></svg>`);
+          showResult(quote, fallback, topicRaw);
+          history.unshift({ quote, imageUrl: fallback, topic: topicRaw });
+          if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
+          refreshGallery();
+          generateBtn.disabled = false;
+          generateBtn.innerHTML = '<span>Generate</span>\n            <svg class="h-5 w-5 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">\n              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />\n            </svg>';
+        };
+        img.src = imageUrl;
+      });
+
+      resultImage.addEventListener('load', () => {
+        resultImage.classList.remove('opacity-0');
+        imageSkeleton.classList.add('hidden');
+      });
+
+      clearGalleryBtn.addEventListener('click', () => {
+        history.length = 0;
+        refreshGallery();
+      });
+
+      document.getElementById('contactForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        if (!name || !email || !message) return;
+        alert(`Thanks, ${name}! Your message has been received. We'll be in touch at ${email}.`);
+        e.target.reset();
+      });
+
+      // Keyboard accessibility: Enter to generate
+      topicInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          generateBtn.click();
+        }
+      });
+
+      // Initialize gallery state
+      refreshGallery();
+    </script>
+  </body>
+</html>
